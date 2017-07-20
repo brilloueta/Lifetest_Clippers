@@ -17,25 +17,37 @@ import time
 LOG_FILE_CSV = "Log_FX811E_Lifetest.csv"
 APP_STATE_PATH = "app_state.json"
 
-
-def get_cycles():
-    path = pathlib.Path(APP_STATE_PATH)
-    if path.exists():
-        with open(APP_STATE_PATH, 'r') as fd:
-            json_str = fd.read()
-            d = json.loads(json_str)
-            return d['cycles']
-
-    set_cycles(0)
-    return get_cycles()
+DEFAULT_APP_STATE = {
+    'cycles': 0,
+    'date': None
+}
 
 
-def set_cycles(cycles):
+def dump_app_state(cycles):
     d = {'cycles': cycles,
          'date': date_str()}
     with open(APP_STATE_PATH, 'w') as fd:
         json_str = json.dumps(d)
         fd.write(json_str)
+
+
+def load_app_state():
+    path = pathlib.Path(APP_STATE_PATH)
+    if !path.exists():
+        return DEFAULT_APP_STATE
+
+    with path.open('r') as fd:
+        json_str = fd.read()
+        d = json.loads(json_str)
+        return d
+
+
+def get_cycles():
+    return load_app_state()['cycles']
+
+
+def set_cycles(cycles):
+    dump_app_state(cycles)
 
 
 def date_str():
@@ -148,7 +160,8 @@ def main():
                         compteur += pas_incr
                         print('Le compteur passe de {} à {}'.format(old_compteur, compteur))
 
-                        log_counter(compteur)
+                        set_cycles(compteur) # dump de l'etat courant
+                        log_to_csv(compteur)
 
                         time.sleep(50)              # on ne change rien pendant X minutes, initalement 1 minute (tps supérieur au déroulement du prog arduino)
 
