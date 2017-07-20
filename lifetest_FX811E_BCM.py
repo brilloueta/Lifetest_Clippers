@@ -20,6 +20,7 @@ log_file_TXT = "Log_FX811E_Lifetest.txt"
 log_file_CSV = "Log_FX811E_Lifetest.csv"
 pas_incr = 96                                       # chaque fin de boucle ajoute 96 cycles de 5min ONcycle_arduino()
 
+pause_delay_sec = 15
 
 
 
@@ -114,20 +115,20 @@ while True:
                     log_time = time.strftime('%d/%m/%y %H:%M:%S',time.localtime())
                     print ("programme en dehors des heures fixes", log_time)
                     GPIO.output(25,GPIO.LOW)        # information vers arduino de ne rien faire
-                    time.sleep(15)             # on ne change rien pendant X minutes, initialement 15 minutes
+                    time.sleep(pause_delay_sec)     # on ne change rien pendant X minutes, initialement 15 minutes
 
             else:
                 log_time = time.strftime('%d/%m/%y %H:%M:%S',time.localtime())
                 print ("programme en dehors des jours fixes", log_time)
                 GPIO.output(25,GPIO.LOW)            # information vers arduino de ne rien faire
-                time.sleep(15)                 # on ne change rien pendant X minutes, initialement 15 minutes
+                time.sleep(pause_delay_sec)         # on ne change rien pendant X minutes, initialement 15 minutes
 
 
         else:
             log_time = time.strftime('%d/%m/%y %H:%M:%S',time.localtime())
             print ("selecteur en position OFF", log_time)
             GPIO.output(25,GPIO.LOW)            # information vers arduino de ne rien faire
-            time.sleep(15)                 # on ne change rien pendant X minutes, initialement 15 minutes
+            time.sleep(pause_delay_sec)         # on ne change rien pendant X minutes, initialement 15 minutes
                            
 
 
@@ -135,5 +136,5 @@ while True:
         log_time = time.strftime('%d/%m/%y %H:%M:%S',time.localtime())
         print ("programme ARDUINO déja en cours", log_time)
         GPIO.output(25,GPIO.LOW)            # information vers arduino de ne rien faire
-        time.sleep(15)                 # on ne change rien pendant X minutes, initialement 15 minutes
-        
+        time.sleep(pause_delay_sec)         # on ne change rien pendant X minutes, initialement 15 minutes
+
