@@ -6,8 +6,12 @@ import RPi.GPIO as GPIO                     # bibliothèque pour utiliser les GP
 import time                                 # bibliothèque pour gestion du temps
 import sys
 
+
+def date_str():
+    return time.strftime('%d/%m/%y %H:%M:%S', time.localtime())
+
 def pause_board(msg):
-    log_time = time.strftime('%d/%m/%y %H:%M:%S',time.localtime())
+    log_time = date_str()
     print(msg, log_time)
     GPIO.output(25,GPIO.LOW)        # information vers arduino de ne rien faire
     time.sleep(pause_delay_sec)     # on ne change rien pendant X minutes, initialement 15 minutes
@@ -71,29 +75,29 @@ while True:
 
     # tant que l'arduino n'a pas termine son programme continue ce qui suit
     if fin_arduino == 0:
-        log_time = time.strftime('%d/%m/%y %H:%M:%S',time.localtime())
+        log_time = date_str()
         print ("programme ARDUINO terminé", log_time)
         
         # verifie que le bouton bascule raspberry est active
         if bouton_bascule == 0:
-            log_time = time.strftime('%d/%m/%y %H:%M:%S',time.localtime())
+            log_time = date_str()
             print ("selecteur en position ON", log_time)
         
             # condition if, si jour = jour de semaine samedi ou dimanche alors demarrer, sinon attendre 15 minutes
             if current_day.lower() in ["monday", "tuesday", "wednesday", "thursday", "friday"]:
-                log_time = time.strftime('%d/%m/%y %H:%M:%S',time.localtime())
+                log_time = date_str()
                 print ("programme dans les jours fixes", log_time)
             
                 # condition if, si heure >8H et <17H alors demarrer, sinon attendre 15 minutes
                 if current_hour_int >= 8 and  current_hour_int <= 17:
-                    log_time = time.strftime('%d/%m/%y %H:%M:%S',time.localtime())
+                    log_time = date_str()
                     print ("programme dans les heures fixes", log_time)
                             
                     #depart cycle
                     GPIO.output(25,GPIO.HIGH)       # depart cycle pour l'arduino
 
                     #affichage dans le shell
-                    log_time = time.strftime('%d/%m/%y %H:%M:%S',time.localtime())
+                    log_time = date_str()
                     print ("depart programme le ", log_time, "\n")
                     print ("Le compteur passe de ", compteur_string)
                     compteur = compteur + pas_incr        
@@ -115,8 +119,6 @@ while True:
 
                     time.sleep(50)              # on ne change rien pendant X minutes, initalement 1 minute (tps supérieur au déroulement du prog arduino)
 
-
-                
                 else:
                     pause_board("programme en dehors des heures fixes")
 
