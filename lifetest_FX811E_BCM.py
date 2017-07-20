@@ -34,8 +34,7 @@ def date_str():
 
 
 def pause_board(msg, delay=15):
-    log_time = date_str()
-    print(msg, log_time)
+    print(msg, date_str())
     GPIO.output(25,GPIO.LOW)        # information vers arduino de ne rien faire
     time.sleep(delay)
 
