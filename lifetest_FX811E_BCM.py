@@ -8,20 +8,37 @@ except ImportError:
     print('LOADING MOCK GPIO')
     import mock_gpio as GPIO
 
-import time
+import pathlib
 import sys
+import time
 
 LOG_FILE_TXT = "Log_FX811E_Lifetest.txt"
 LOG_FILE_CSV = "Log_FX811E_Lifetest.csv"
+PAUSE_DELAY_SEC = 15
+
+def get_cycles():
+    path = pathlib.Path(LOG_FILE_TXT)
+    if path.exists():
+        with open(LOG_FILE_TXT,"r") as fd:
+            return int(fd.read())
+
+    set_cycles(0)
+    return get_cycles()
+
+
+def set_cycles(cycles):
+    log_counter(cycles)
+
 
 def date_str():
     return time.strftime('%d/%m/%y %H:%M:%S', time.localtime())
+
 
 def pause_board(msg):
     log_time = date_str()
     print(msg, log_time)
     GPIO.output(25,GPIO.LOW)        # information vers arduino de ne rien faire
-    time.sleep(pause_delay_sec)     # on ne change rien pendant X minutes, initialement 15 minutes
+    time.sleep(PAUSE_DELAY_SEC)     # on ne change rien pendant X minutes, initialement 15 minutes
 
 def log_counter(cycles):
     with open(LOG_FILE_TXT, "w") as fd:
@@ -50,9 +67,8 @@ def main():
 
     pas_incr = 96                                       # chaque fin de boucle ajoute 96 cycles de 5min ONcycle_arduino()
 
-    pause_delay_sec = 15
-
-
+    compteur_string = get_cycles()
+    print ("La derniere valeur enregistree du compteur est ", compteur_string,"\n")
 
     # recuperer la valeur du compteur
     fichier = open(LOG_FILE_TXT,"r")
@@ -78,10 +94,6 @@ def main():
     else:
         print ("Le choix n'est pas repertorie, le prog s'arrete ici !")
         sys.exit(0)
-
-
-
-
 
     # Verifie les conditions pour lancer le prog arduino
     while True:
