@@ -2,8 +2,13 @@
 # -*- coding: utf-8 -*-
 
 # bibliothèques
-import RPi.GPIO as GPIO                     # bibliothèque pour utiliser les GPIO
-import time                                 # bibliothèque pour gestion du temps
+try:
+    import RPi.GPIO as GPIO
+except ImportError:
+    print('LOADING MOCK GPIO')
+    import mock_gpio as GPIO
+
+import time
 import sys
 
 
@@ -49,7 +54,7 @@ if choix.lower() in ["y", "yes"]:
     fichier = open(log_file_TXT,"w") #"w" pour écraser
     fichier.write(compteur_string)
     fichier.close()
-    
+
 elif choix.lower() in ["n", "no"]:
     compteur_string = str(compteur)
     print ("La valeur enregistree du compteur est ", compteur_string, "\n")
