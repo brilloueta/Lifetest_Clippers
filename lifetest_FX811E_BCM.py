@@ -11,6 +11,8 @@ except ImportError:
 import time
 import sys
 
+LOG_FILE_TXT = "Log_FX811E_Lifetest.txt"
+LOG_FILE_CSV = "Log_FX811E_Lifetest.csv"
 
 def date_str():
     return time.strftime('%d/%m/%y %H:%M:%S', time.localtime())
