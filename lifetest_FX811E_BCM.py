@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 # bibliothèques
-from __future__ import print_function      # si execution en python 2
 import RPi.GPIO as GPIO                     # bibliothèque pour utiliser les GPIO
 import time                                 # bibliothèque pour gestion du temps
 import sys
