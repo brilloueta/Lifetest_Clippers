@@ -8,25 +8,34 @@ except ImportError:
     print('LOADING MOCK GPIO')
     import mock_gpio as GPIO
 
+import json
 import pathlib
 import sys
 import time
 
-LOG_FILE_TXT = "Log_FX811E_Lifetest.txt"
+
 LOG_FILE_CSV = "Log_FX811E_Lifetest.csv"
+APP_STATE_PATH = "app_state.json"
+
 
 def get_cycles():
-    path = pathlib.Path(LOG_FILE_TXT)
+    path = pathlib.Path(APP_STATE_PATH)
     if path.exists():
-        with open(LOG_FILE_TXT,"r") as fd:
-            return int(fd.read())
+        with open(APP_STATE_PATH, 'r') as fd:
+            json_str = fd.read()
+            d = json.loads(json_str)
+            return d['cycles']
 
     set_cycles(0)
     return get_cycles()
 
 
 def set_cycles(cycles):
-    log_counter(cycles)
+    d = {'cycles': cycles,
+         'date': date_str()}
+    with open(APP_STATE_PATH, 'w') as fd:
+        json_str = json.dumps(d)
+        fd.write(json_str)
 
 
 def date_str():
@@ -41,6 +50,7 @@ def pause_board(msg, delay=15):
     print(msg, date_str())
     arduino_idle()
     time.sleep(delay)
+
 
 def log_counter(cycles):
     with open(LOG_FILE_TXT, "w") as fd:
