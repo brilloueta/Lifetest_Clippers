@@ -14,7 +14,6 @@ import time
 
 LOG_FILE_TXT = "Log_FX811E_Lifetest.txt"
 LOG_FILE_CSV = "Log_FX811E_Lifetest.csv"
-PAUSE_DELAY_SEC = 15
 
 def get_cycles():
     path = pathlib.Path(LOG_FILE_TXT)
@@ -34,11 +33,11 @@ def date_str():
     return time.strftime('%d/%m/%y %H:%M:%S', time.localtime())
 
 
-def pause_board(msg):
+def pause_board(msg, delay=15):
     log_time = date_str()
     print(msg, log_time)
     GPIO.output(25,GPIO.LOW)        # information vers arduino de ne rien faire
-    time.sleep(PAUSE_DELAY_SEC)     # on ne change rien pendant X minutes, initialement 15 minutes
+    time.sleep(delay)
 
 def log_counter(cycles):
     with open(LOG_FILE_TXT, "w") as fd:
