@@ -24,9 +24,8 @@ def pause_board(msg):
     time.sleep(pause_delay_sec)     # on ne change rien pendant X minutes, initialement 15 minutes
 
 def log_counter(cycles):
-    fichier = open(LOG_FILE_TXT, "w")
-    fichier.write(str(cycles))
-    fichier.close()
+    with open(LOG_FILE_TXT, "w") as fd:
+        fd.write(str(cycles))
 
     # ajoute la valeur dans le fichier log CSV
     #fichier = open(LOG_FILE_CSV,"a") # "a" pour ajouter
