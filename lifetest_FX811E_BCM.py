@@ -6,6 +6,12 @@ import RPi.GPIO as GPIO                     # bibliothèque pour utiliser les GP
 import time                                 # bibliothèque pour gestion du temps
 import sys
 
+def pause_board(msg):
+    log_time = time.strftime('%d/%m/%y %H:%M:%S',time.localtime())
+    print(msg, log_time)
+    GPIO.output(25,GPIO.LOW)        # information vers arduino de ne rien faire
+    time.sleep(pause_delay_sec)     # on ne change rien pendant X minutes, initialement 15 minutes
+
 # configurations
 GPIO.setmode(GPIO.BCM)                      # mode de numérotation des pins
 GPIO.setwarnings(False)                     # supprime les messages d'erreurs
@@ -112,29 +118,13 @@ while True:
 
                 
                 else:
-                    log_time = time.strftime('%d/%m/%y %H:%M:%S',time.localtime())
-                    print ("programme en dehors des heures fixes", log_time)
-                    GPIO.output(25,GPIO.LOW)        # information vers arduino de ne rien faire
-                    time.sleep(pause_delay_sec)     # on ne change rien pendant X minutes, initialement 15 minutes
+                    pause_board("programme en dehors des heures fixes")
 
             else:
-                log_time = time.strftime('%d/%m/%y %H:%M:%S',time.localtime())
-                print ("programme en dehors des jours fixes", log_time)
-                GPIO.output(25,GPIO.LOW)            # information vers arduino de ne rien faire
-                time.sleep(pause_delay_sec)         # on ne change rien pendant X minutes, initialement 15 minutes
-
+                pause_board("programme en dehors des jours fixes")
 
         else:
-            log_time = time.strftime('%d/%m/%y %H:%M:%S',time.localtime())
-            print ("selecteur en position OFF", log_time)
-            GPIO.output(25,GPIO.LOW)            # information vers arduino de ne rien faire
-            time.sleep(pause_delay_sec)         # on ne change rien pendant X minutes, initialement 15 minutes
-                           
-
+            pause_board("selecteur en position OFF")
 
     else:
-        log_time = time.strftime('%d/%m/%y %H:%M:%S',time.localtime())
-        print ("programme ARDUINO déja en cours", log_time)
-        GPIO.output(25,GPIO.LOW)            # information vers arduino de ne rien faire
-        time.sleep(pause_delay_sec)         # on ne change rien pendant X minutes, initialement 15 minutes
-
+        pause_board("programme ARDUINO déja en cours")
