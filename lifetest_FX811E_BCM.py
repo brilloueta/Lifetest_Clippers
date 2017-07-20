@@ -33,9 +33,13 @@ def date_str():
     return time.strftime('%d/%m/%y %H:%M:%S', time.localtime())
 
 
+def arduino_idle():
+    GPIO.output(25,GPIO.LOW)
+
+
 def pause_board(msg, delay=15):
     print(msg, date_str())
-    GPIO.output(25,GPIO.LOW)        # information vers arduino de ne rien faire
+    arduino_idle()
     time.sleep(delay)
 
 def log_counter(cycles):
