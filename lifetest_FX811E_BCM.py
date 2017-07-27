@@ -33,7 +33,7 @@ def dump_app_state(cycles):
 
 def load_app_state():
     path = pathlib.Path(APP_STATE_PATH)
-    if !path.exists():
+    if not path.exists():
         return DEFAULT_APP_STATE
 
     with path.open('r') as fd:
