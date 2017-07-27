@@ -93,22 +93,12 @@ def main():
 
     compteur_string = get_cycles()
     print ("La derniere valeur enregistree du compteur est ", compteur_string,"\n")
-
-    # recuperer la valeur du compteur
-    fichier = open(LOG_FILE_TXT,"r")
-    compteur_string = fichier.read()
-    compteur = int(compteur_string)
-    print ("La derniere valeur enregistree du compteur est ", compteur_string,"\n")
-
     choix = input("Souhaitez vous modifier la valeur ? Y/N\n")
 
     if choix.lower() in ["y", "yes"]:
         compteur_string = input("Saisir la nouvelle valeur pour le compteur\n")
         print ("La nouvelle valeur du compteur est ", compteur_string, "\n")
-        compteur = int(compteur_string)
-        fichier = open(LOG_FILE_TXT,"w") #"w" pour écraser
-        fichier.write(compteur_string)
-        fichier.close()
+        set_cycles(int(compteur_string))        # dump de l'etat courant
 
     elif choix.lower() in ["n", "no"]:
         compteur_string = str(compteur)
@@ -160,7 +150,7 @@ def main():
                         compteur += pas_incr
                         print('Le compteur passe de {} à {}'.format(old_compteur, compteur))
 
-                        set_cycles(compteur) # dump de l'etat courant
+                        set_cycles(compteur)        # dump de l'etat courant
                         log_to_csv(compteur)
 
                         time.sleep(50)              # on ne change rien pendant X minutes, initalement 1 minute (tps supérieur au déroulement du prog arduino)
