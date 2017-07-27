@@ -19,13 +19,15 @@ APP_STATE_PATH = "app_state.json"
 
 DEFAULT_APP_STATE = {
     'cycles': 0,
-    'date': None
+    'date': None,
+    'pas': 1
 }
 
 
-def dump_app_state(cycles):
+def dump_app_state(cycles, pas_incr):
     d = {'cycles': cycles,
-         'date': date_str()}
+         'date': date_str(),
+         'pas': pas_incr}
     with open(APP_STATE_PATH, 'w') as fd:
         json_str = json.dumps(d)
         fd.write(json_str)
@@ -49,6 +51,12 @@ def get_cycles():
 def set_cycles(cycles):
     dump_app_state(cycles)
 
+
+def get_pas_incr():
+    return load_app_state()['pas']
+
+def set_cycles(pas_incr):
+    dump_app_state(pas_incr)
 
 def date_str():
     return time.strftime('%d/%m/%y %H:%M:%S', time.localtime())
@@ -77,6 +85,44 @@ def log_counter(cycles):
     #fichier.close()
 
 
+def init_cycles():
+    compteur_string = get_cycles()
+    print ('La derniere valeur enregistree du compteur est {}'.format(compteur_string))
+    choix = input('Souhaitez vous modifier la valeur ? Y/N')
+
+    if choix.lower() in ['y', 'yes']:
+        compteur_string = input('Saisir la nouvelle valeur pour le compteur')
+        print ('La nouvelle valeur du compteur est ", compteur_string')
+        set_cycles(int(compteur_string))        # dump de l'etat courant
+
+    elif choix.lower() in ['n', 'no']:
+        print ('La valeur enregistree du compteur est {}'.format(compteur_string))
+        compteur = int(compteur_string)
+
+    else:
+        print ("Le choix n'est pas repertorie, le prog s'arrete ici !")
+        sys.exit(0)
+
+
+def init_pas():
+    pas_incr = get_pas_incr() # chaque fin de boucle ajoute 96 cycles de 5min ONcycle_arduino()
+    print ('chaque fin de boucle ajoute {} cycles de 5min ON cycle_arduino'.format(pas_incr))
+    choix = input('Souhaitez vous modifier la valeur ? Y/N')
+
+    if choix.lower() in ['y', 'yes']:
+        pas_incr = input('Saisir la nouvelle valeur de pas')
+        print ('chaque fin de boucle ajoute {} cycles de 5min ON cycle_arduino'.format(pas_incr))
+        set_cycles(int(pas_incr))        # dump de l'etat courant
+
+    elif choix.lower() in ['n', 'no']:
+        print ('chaque fin de boucle ajoute {} cycles de 5min ON cycle_arduino'.format(pas_incr))
+        pas_incr = int(pas_incr)
+
+    else:
+        print ("Le choix n'est pas repertorie, le prog s'arrete ici !")
+        sys.exit(0)
+
+
 def main():
     # configurations
     GPIO.setmode(GPIO.BCM)                      # mode de numérotation des pins
@@ -88,25 +134,9 @@ def main():
     GPIO.setup(19, GPIO.IN, pull_up_down=GPIO.PUD_UP)   # la pin 19 réglée en entrée => signal haut envoyé par arduino en fin de programme arduino
 
     # variables perso
-
-    pas_incr = 96                                       # chaque fin de boucle ajoute 96 cycles de 5min ONcycle_arduino()
-
-    compteur_string = get_cycles()
-    print ("La derniere valeur enregistree du compteur est ", compteur_string,"\n")
-    choix = input("Souhaitez vous modifier la valeur ? Y/N\n")
-
-    if choix.lower() in ["y", "yes"]:
-        compteur_string = input("Saisir la nouvelle valeur pour le compteur\n")
-        print ("La nouvelle valeur du compteur est ", compteur_string, "\n")
-        set_cycles(int(compteur_string))        # dump de l'etat courant
-
-    elif choix.lower() in ["n", "no"]:
-        print ("La valeur enregistree du compteur est ", str(compteur), "\n")
-        compteur = int(compteur_string)
-
-    else:
-        print ("Le choix n'est pas repertorie, le prog s'arrete ici !")
-        sys.exit(0)
+    init_cycles()
+    init_pas()
+   
 
     # Verifie les conditions pour lancer le prog arduino
     while True:
