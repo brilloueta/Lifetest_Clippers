@@ -101,8 +101,7 @@ def main():
         set_cycles(int(compteur_string))        # dump de l'etat courant
 
     elif choix.lower() in ["n", "no"]:
-        compteur_string = str(compteur)
-        print ("La valeur enregistree du compteur est ", compteur_string, "\n")
+        print ("La valeur enregistree du compteur est ", str(compteur), "\n")
         compteur = int(compteur_string)
 
     else:
