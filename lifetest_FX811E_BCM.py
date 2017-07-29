@@ -24,12 +24,13 @@ DEFAULT_APP_STATE = {
 }
 
 
-def dump_app_state(cycles, pas_incr):
-    d = {'cycles': cycles,
-         'date': date_str(),
-         'pas': pas_incr}
+def dump_app_state(**kwargs):
+    state = load_app_state()
+    state.update(kwargs)
+    state['date'] = date_str()
+
     with open(APP_STATE_PATH, 'w') as fd:
-        json_str = json.dumps(d)
+        json_str = json.dumps(state)
         fd.write(json_str)
 
 
@@ -49,14 +50,16 @@ def get_cycles():
 
 
 def set_cycles(cycles):
-    dump_app_state(cycles)
+    dump_app_state(cycles=cycles)
 
 
 def get_pas_incr():
     return load_app_state()['pas']
 
-def set_cycles(pas_incr):
-    dump_app_state(pas_incr)
+
+def set_pas_incr(pas_incr):
+    dump_app_state(pas=pas_incr)
+
 
 def date_str():
     return time.strftime('%d/%m/%y %H:%M:%S', time.localtime())
@@ -112,7 +115,7 @@ def init_pas():
     if choix.lower() in ['y', 'yes']:
         pas_incr = input('Saisir la nouvelle valeur de pas')
         print ('chaque fin de boucle ajoute {} cycles de 5min ON cycle_arduino'.format(pas_incr))
-        set_cycles(int(pas_incr))        # dump de l'etat courant
+        set_pas_incr(int(pas_incr))        # dump de l'etat courant
 
     elif choix.lower() in ['n', 'no']:
         print ('chaque fin de boucle ajoute {} cycles de 5min ON cycle_arduino'.format(pas_incr))
