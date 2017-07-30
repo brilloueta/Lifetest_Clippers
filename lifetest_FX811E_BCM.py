@@ -27,7 +27,7 @@ DEFAULT_APP_STATE = {
 def dump_app_state(**kwargs):
     state = load_app_state()
     state.update(kwargs)
-    state['date'] = date_str()
+    state['date'] = date_sec_epoch()
 
     with open(APP_STATE_PATH, 'w') as fd:
         json_str = json.dumps(state)
@@ -61,26 +61,28 @@ def set_pas_incr(pas_incr):
     dump_app_state(pas_incr=pas_incr)
 
 
-def date_str():
+def date_sec_epoch():
     #return time.strftime('%d/%m/%y %H:%M:%S', time.localtime())
     return time.time()
 
 def log_time():
-    return time.strftime('%d/%m/%y %H:%M:%S', time.localtime(date_str()))
+    return time.strftime('%d/%m/%y %H:%M:%S', time.localtime(date_sec_epoch()))
 
 def arduino_idle():
     GPIO.output(25,GPIO.LOW)
 
 
 def pause_board(msg, delay=15):
-    print(msg, time.strftime('%d/%m/%y %H:%M:%S', time.localtime(date_str())))
+    print(msg, time.strftime('%d/%m/%y %H:%M:%S', time.localtime(date_sec_epoch())))
     arduino_idle()
     time.sleep(delay)
 
 
-def log_counter(cycles):
+def log_to_csv(cycles):
     with open(LOG_FILE_CSV, "a") as fd:
-        fd.write(date_str())
+        fd.write(str(date_sec_epoch()))
+        fd.write(", ")
+        fd.write(log_time())
         fd.write(", ")
         fd.write(str(cycles))
         fd.write("\n")
@@ -144,8 +146,8 @@ def main():
         fin_arduino = GPIO.input(19)
         bouton_bascule = GPIO.input(4)
 
-        current_day = time.strftime('%A',time.localtime(date_str()))
-        current_hour = int(time.strftime('%H',time.localtime(date_str())))
+        current_day = time.strftime('%A',time.localtime(date_sec_epoch()))
+        current_hour = int(time.strftime('%H',time.localtime(date_sec_epoch())))
 
         # tant que l'arduino n'a pas termine son programme continue ce qui suit
         if fin_arduino == 0:
