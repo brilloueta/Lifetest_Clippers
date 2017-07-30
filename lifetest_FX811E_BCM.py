@@ -91,38 +91,38 @@ def log_to_csv(cycles):
 def init_cycles():
     cycles_string = get_cycles()
     print ('La derniere valeur enregistree du compteur est {}'.format(cycles_string))
-    choix = input('Souhaitez vous modifier la valeur ? Y/N')
+    choix = input('Souhaitez vous modifier la valeur ? Y/N \n')
 
     if choix.lower() in ['y', 'yes']:
-        cycles_string = input('Saisir la nouvelle valeur pour le compteur')
-        print ('La nouvelle valeur du compteur est {}'.format(cycles_string))
+        cycles_string = input('\nSaisir la nouvelle valeur pour le compteur \n')
+        print ('\nLa nouvelle valeur du compteur est {} \n'.format(cycles_string))
         set_cycles(int(cycles_string))        # dump de l'etat courant
 
     elif choix.lower() in ['n', 'no']:
-        print ('La valeur enregistree du compteur est {}'.format(cycles_string))
+        print ('\nLa valeur enregistree du compteur est {} \n'.format(cycles_string))
         cycle = int(cycles_string)
 
     else:
-        print ("Le choix n'est pas repertorie, le prog s'arrete ici !")
+        print ("Le choix n'est pas repertorie, le prog s'arrete ici ! \n \n")
         sys.exit(0)
 
 
 def init_pas_incr():
     pas_incr = get_pas_incr()
-    print ('chaque fin de boucle ajoute {} cycles de 5min ON cycle_arduino'.format(pas_incr))
-    choix = input('Souhaitez vous modifier la valeur ? Y/N')
+    print ('chaque fin de boucle ajoute {} cycles de 5min ON'.format(pas_incr))
+    choix = input('Souhaitez vous modifier la valeur ? Y/N \n')
 
     if choix.lower() in ['y', 'yes']:
-        pas_incr = input('Saisir la nouvelle valeur de pas')
-        print ('chaque fin de boucle ajoute {} cycles de 5min ON cycle_arduino'.format(pas_incr))
+        pas_incr = input('\nSaisir la nouvelle valeur de pas \n')
+        print ('\nchaque fin de boucle ajoute {} cycles de 5min ON \n'.format(pas_incr))
         set_pas_incr(int(pas_incr))        # dump de l'etat courant
 
     elif choix.lower() in ['n', 'no']:
-        print ('chaque fin de boucle ajoute {} cycles de 5min ON cycle_arduino'.format(pas_incr))
+        print ('\nchaque fin de boucle ajoute dorénavant {} cycles de 5min ON \n'.format(pas_incr))
         pas_incr = int(pas_incr)
 
     else:
-        print ("Le choix n'est pas repertorie, le prog s'arrete ici !")
+        print ("Le choix n'est pas repertorie, le prog s'arrete ici ! \n \n")
         sys.exit(0)
 
 
@@ -151,7 +151,7 @@ def main():
 
         # tant que l'arduino n'a pas termine son programme continue ce qui suit
         if fin_arduino == 0:
-            print ("programme ARDUINO terminé", log_time())
+            print ("cycles ON/OFF terminé", log_time())
             
             # verifie que le bouton bascule raspberry est active
             if bouton_bascule == 0:
@@ -190,7 +190,7 @@ def main():
                 pause_board("selecteur en position OFF")
 
         else:
-            pause_board("programme ARDUINO déja en cours")
+            pause_board("cycles ON/OFF déja en cours")
 
 
 if __name__ == '__main__':
