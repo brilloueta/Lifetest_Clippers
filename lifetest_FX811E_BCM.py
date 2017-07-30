@@ -76,16 +76,11 @@ def pause_board(msg, delay=15):
 
 
 def log_counter(cycles):
-    with open(LOG_FILE_TXT, "w") as fd:
+    with open(LOG_FILE_CSV, "a") as fd:
+        fd.write(date_str())
+        fd.write(", ")
         fd.write(str(cycles))
-
-    # ajoute la valeur dans le fichier log CSV
-    #fichier = open(LOG_FILE_CSV,"a") # "a" pour ajouter
-    #fichier.write(compteur_string)
-    #fichier.write(", ")
-    #fichier.write(log_time)
-    #fichier.write("\n")
-    #fichier.close()
+        fd.write("\n")
 
 
 def init_cycles():
@@ -95,7 +90,7 @@ def init_cycles():
 
     if choix.lower() in ['y', 'yes']:
         compteur_string = input('Saisir la nouvelle valeur pour le compteur')
-        print ('La nouvelle valeur du compteur est ", compteur_string')
+        print ('La nouvelle valeur du compteur est {}'.format(compteur_string))
         set_cycles(int(compteur_string))        # dump de l'etat courant
 
     elif choix.lower() in ['n', 'no']:
@@ -108,7 +103,7 @@ def init_cycles():
 
 
 def init_pas():
-    pas_incr = get_pas_incr() # chaque fin de boucle ajoute 96 cycles de 5min ONcycle_arduino()
+    pas_incr = get_pas_incr()
     print ('chaque fin de boucle ajoute {} cycles de 5min ON cycle_arduino'.format(pas_incr))
     choix = input('Souhaitez vous modifier la valeur ? Y/N')
 
