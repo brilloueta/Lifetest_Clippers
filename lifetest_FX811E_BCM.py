@@ -62,15 +62,18 @@ def set_pas_incr(pas_incr):
 
 
 def date_str():
-    return time.strftime('%d/%m/%y %H:%M:%S', time.localtime())
+    #return time.strftime('%d/%m/%y %H:%M:%S', time.localtime())
+    return time.time()
 
+def log_time():
+    return time.strftime('%d/%m/%y %H:%M:%S', time.localtime(date_str()))
 
 def arduino_idle():
     GPIO.output(25,GPIO.LOW)
 
 
 def pause_board(msg, delay=15):
-    print(msg, date_str())
+    print(msg, time.strftime('%d/%m/%y %H:%M:%S', time.localtime(date_str())))
     arduino_idle()
     time.sleep(delay)
 
@@ -134,44 +137,37 @@ def main():
     # variables perso
     init_cycles()
     init_pas()
-   
-
+    
     # Verifie les conditions pour lancer le prog arduino
     while True:
 
         fin_arduino = GPIO.input(19)
         bouton_bascule = GPIO.input(4)
 
-        current_day = time.strftime('%A',time.localtime())
-        current_hour = time.strftime('%H',time.localtime())
-        current_hour_int = int(current_hour)
+        current_day = time.strftime('%A',time.localtime(date_str()))
+        current_hour = int(time.strftime('%H',time.localtime(date_str())))
 
         # tant que l'arduino n'a pas termine son programme continue ce qui suit
         if fin_arduino == 0:
-            log_time = date_str()
-            print ("programme ARDUINO terminé", log_time)
+            print ("programme ARDUINO terminé", log_time())
             
             # verifie que le bouton bascule raspberry est active
             if bouton_bascule == 0:
-                log_time = date_str()
-                print ("selecteur en position ON", log_time)
+                print ("selecteur en position ON", log_time())
             
                 # condition if, si jour = jour de semaine samedi ou dimanche alors demarrer, sinon attendre 15 minutes
                 if current_day.lower() in ["monday", "tuesday", "wednesday", "thursday", "friday"]:
-                    log_time = date_str()
-                    print ("programme dans les jours fixes", log_time)
+                    print ("programme dans les jours fixes", log_time())
                 
                     # condition if, si heure >8H et <17H alors demarrer, sinon attendre 15 minutes
-                    if current_hour_int >= 8 and  current_hour_int <= 17:
-                        log_time = date_str()
-                        print ("programme dans les heures fixes", log_time)
+                    if current_hour >= 8 and  current_hour <= 17:
+                        print ("programme dans les heures fixes", log_time())
 
                         #depart cycle
                         GPIO.output(25,GPIO.HIGH)       # depart cycle pour l'arduino
 
                         #affichage dans le shell
-                        log_time = date_str()
-                        print ("depart programme le ", log_time, "\n")
+                        print ("depart programme le ", log_time(), "\n")
 
                         old_compteur = compteur
                         compteur += pas_incr
