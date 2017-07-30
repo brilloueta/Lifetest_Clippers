@@ -20,7 +20,7 @@ APP_STATE_PATH = "app_state.json"
 DEFAULT_APP_STATE = {
     'cycles': 0,
     'date': None,
-    'pas': 1
+    'pas_incr': 1
 }
 
 
@@ -49,16 +49,16 @@ def get_cycles():
     return load_app_state()['cycles']
 
 
-def set_cycles(cycles):
-    dump_app_state(cycles=cycles)
+def set_cycles(cycle):
+    dump_app_state(cycles=cycle)
 
 
 def get_pas_incr():
-    return load_app_state()['pas']
+    return load_app_state()['pas_incr']
 
 
 def set_pas_incr(pas_incr):
-    dump_app_state(pas=pas_incr)
+    dump_app_state(pas_incr=pas_incr)
 
 
 def date_str():
@@ -87,25 +87,25 @@ def log_counter(cycles):
 
 
 def init_cycles():
-    compteur_string = get_cycles()
-    print ('La derniere valeur enregistree du compteur est {}'.format(compteur_string))
+    cycles_string = get_cycles()
+    print ('La derniere valeur enregistree du compteur est {}'.format(cycles_string))
     choix = input('Souhaitez vous modifier la valeur ? Y/N')
 
     if choix.lower() in ['y', 'yes']:
-        compteur_string = input('Saisir la nouvelle valeur pour le compteur')
-        print ('La nouvelle valeur du compteur est {}'.format(compteur_string))
-        set_cycles(int(compteur_string))        # dump de l'etat courant
+        cycles_string = input('Saisir la nouvelle valeur pour le compteur')
+        print ('La nouvelle valeur du compteur est {}'.format(cycles_string))
+        set_cycles(int(cycles_string))        # dump de l'etat courant
 
     elif choix.lower() in ['n', 'no']:
-        print ('La valeur enregistree du compteur est {}'.format(compteur_string))
-        compteur = int(compteur_string)
+        print ('La valeur enregistree du compteur est {}'.format(cycles_string))
+        cycle = int(cycles_string)
 
     else:
         print ("Le choix n'est pas repertorie, le prog s'arrete ici !")
         sys.exit(0)
 
 
-def init_pas():
+def init_pas_incr():
     pas_incr = get_pas_incr()
     print ('chaque fin de boucle ajoute {} cycles de 5min ON cycle_arduino'.format(pas_incr))
     choix = input('Souhaitez vous modifier la valeur ? Y/N')
@@ -136,7 +136,7 @@ def main():
 
     # variables perso
     init_cycles()
-    init_pas()
+    init_pas_incr()
     
     # Verifie les conditions pour lancer le prog arduino
     while True:
@@ -169,12 +169,12 @@ def main():
                         #affichage dans le shell
                         print ("depart programme le ", log_time(), "\n")
 
-                        old_compteur = compteur
-                        compteur += pas_incr
-                        print('Le compteur passe de {} à {}'.format(old_compteur, compteur))
+                        old_cycle = cycle
+                        cycle += pas_incr
+                        print('Le compteur passe de {} à {}'.format(old_cycle, cycle))
 
-                        set_cycles(compteur)        # dump de l'etat courant
-                        log_to_csv(compteur)
+                        set_cycles(cycle)        # dump de l'etat courant
+                        log_to_csv(cycle)
 
                         time.sleep(50)              # on ne change rien pendant X minutes, initalement 1 minute (tps supérieur au déroulement du prog arduino)
 
