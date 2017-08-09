@@ -15,7 +15,7 @@ import time
 
 
 DEFAULT_LOG_FILE_CSV = "Log_Lifetest.csv"
-APP_STATE_PATH = "app_state.json"
+DEFAULT_APP_STATE_PATH = "app_state.json"
 
 DEFAULT_APP_STATE = {
     'cycles': 0,
@@ -29,18 +29,24 @@ def log_file_path():
         return sys.argv[1]
     return DEFAULT_LOG_FILE_CSV
 
+
+def app_state_path():
+    if len(sys.argv) > 2:
+        return sys.argv[2]
+    return DEFAULT_APP_STATE_PATH
+
 def dump_app_state(**kwargs):
     state = load_app_state()
     state.update(kwargs)
     state['date'] = date_sec_epoch()
 
-    with open(APP_STATE_PATH, 'w') as fd:
+    with open(app_state_path(), 'w') as fd:
         json_str = json.dumps(state)
         fd.write(json_str)
 
 
 def load_app_state():
-    path = pathlib.Path(APP_STATE_PATH)
+    path = pathlib.Path(app_state_path())
     if not path.exists():
         return DEFAULT_APP_STATE
 
