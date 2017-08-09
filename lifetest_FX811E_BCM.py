@@ -8,14 +8,11 @@ except ImportError:
     print('LOADING MOCK GPIO')
     import mock_gpio as GPIO
 
+import argparse
 import json
 import pathlib
 import sys
 import time
-
-
-DEFAULT_LOG_FILE_CSV = "Log_Lifetest.csv"
-DEFAULT_APP_STATE_PATH = "app_state.json"
 
 DEFAULT_APP_STATE = {
     'cycles': 0,
@@ -24,29 +21,18 @@ DEFAULT_APP_STATE = {
 }
 
 
-def log_file_path():
-    if len(sys.argv) > 1:
-        return sys.argv[1]
-    return DEFAULT_LOG_FILE_CSV
-
-
-def app_state_path():
-    if len(sys.argv) > 2:
-        return sys.argv[2]
-    return DEFAULT_APP_STATE_PATH
-
-def dump_app_state(**kwargs):
-    state = load_app_state()
+def dump_app_state(file_path, **kwargs):
+    state = load_app_state(file_path)
     state.update(kwargs)
     state['date'] = date_sec_epoch()
 
-    with open(app_state_path(), 'w') as fd:
+    with open(file_path, 'w') as fd:
         json_str = json.dumps(state)
         fd.write(json_str)
 
 
-def load_app_state():
-    path = pathlib.Path(app_state_path())
+def load_app_state(file_path):
+    path = pathlib.Path(file_path)
     if not path.exists():
         return DEFAULT_APP_STATE
 
@@ -56,20 +42,25 @@ def load_app_state():
         return d
 
 
-def get_cycles():
-    return load_app_state()['cycles']
+class App(object):
+    def __init__(self, log_file, app_state_file):
+        self.log_file = log_file
+        self.app_state_file = app_state_file
 
+    def get_cycles(self):
+        return load_app_state(self.app_state_file)['cycles']
 
-def set_cycles(cycle):
-    dump_app_state(cycles=cycle)
+    def set_cycles(self, cycle):
+        dump_app_state(self.app_state_file, cycles=cycle)
 
+    def get_pas_incr(self):
+        return load_app_state(self.app_state_file)['pas_incr']
 
-def get_pas_incr():
-    return load_app_state()['pas_incr']
+    def set_pas_incr(self, pas_incr):
+        dump_app_state(self.app_state_file, pas_incr=pas_incr)
 
-
-def set_pas_incr(pas_incr):
-    dump_app_state(pas_incr=pas_incr)
+    def log_to_csv(self, cycles):
+        log_to_csv(self.log_file, cycles)
 
 
 def date_sec_epoch():
@@ -89,8 +80,8 @@ def pause_board(msg, delay=15):
     time.sleep(delay)
 
 
-def log_to_csv(cycles):
-    with open(log_file_path(), "a") as fd:
+def log_to_csv(file_path, cycles):
+    with open(file_path, "a") as fd:
         fd.write(str(date_sec_epoch()))
         fd.write(", ")
         fd.write(log_time())
@@ -99,15 +90,15 @@ def log_to_csv(cycles):
         fd.write("\n")
 
 
-def init_cycles():
-    cycles_string = get_cycles()
+def init_cycles(app):
+    cycles_string = app.get_cycles()
     print ('La derniere valeur enregistree du compteur est {}'.format(cycles_string))
     choix = input('Souhaitez vous modifier la valeur ? Y/N \n')
 
     if choix.lower() in ['y', 'yes']:
         cycles_string = input('\nSaisir la nouvelle valeur pour le compteur \n')
         print ('\nLa nouvelle valeur du compteur est {} \n'.format(cycles_string))
-        set_cycles(int(cycles_string))        # dump de l'etat courant
+        app.set_cycles(int(cycles_string))        # dump de l'etat courant
 
     elif choix.lower() in ['n', 'no']:
         print ('\nLa valeur enregistree du compteur est {} \n'.format(cycles_string))
@@ -118,15 +109,15 @@ def init_cycles():
         sys.exit(0)
 
 
-def init_pas_incr():
-    pas_incr = get_pas_incr()
+def init_pas_incr(app):
+    pas_incr = app.get_pas_incr()
     print ('chaque fin de boucle ajoute {} cycles de 5min ON'.format(pas_incr))
     choix = input('Souhaitez vous modifier la valeur ? Y/N \n')
 
     if choix.lower() in ['y', 'yes']:
         pas_incr = input('\nSaisir la nouvelle valeur de pas \n')
         print ('\nchaque fin de boucle ajoute {} cycles de 5min ON \n'.format(pas_incr))
-        set_pas_incr(int(pas_incr))        # dump de l'etat courant
+        app.set_pas_incr(int(pas_incr))        # dump de l'etat courant
 
     elif choix.lower() in ['n', 'no']:
         print ('\nchaque fin de boucle ajoute dorénavant {} cycles de 5min ON \n'.format(pas_incr))
@@ -137,7 +128,11 @@ def init_pas_incr():
         sys.exit(0)
 
 
-def main():
+def main(args):
+    app = App(
+        log_file=args.log_file,
+        app_state_file=args.app_state_file
+    )
     # configurations
     GPIO.setmode(GPIO.BCM)                      # mode de numérotation des pins
     GPIO.setwarnings(False)                     # supprime les messages d'erreurs
@@ -148,8 +143,8 @@ def main():
     GPIO.setup(19, GPIO.IN, pull_up_down=GPIO.PUD_UP)   # la pin 19 réglée en entrée => signal haut envoyé par arduino en fin de programme arduino
 
     # variables perso
-    init_cycles()
-    init_pas_incr()
+    init_cycles(app)
+    init_pas_incr(app)
     
     # Verifie les conditions pour lancer le prog arduino
     while True:
@@ -186,8 +181,8 @@ def main():
                         cycle += pas_incr
                         print('Le compteur passe de {} à {}'.format(old_cycle, cycle))
 
-                        set_cycles(cycle)        # dump de l'etat courant
-                        log_to_csv(cycle)
+                        app.set_cycles(cycle)        # dump de l'etat courant
+                        app.log_to_csv(cycle)
 
                         time.sleep(50)              # on ne change rien pendant X minutes, initalement 1 minute (tps supérieur au déroulement du prog arduino)
 
@@ -204,5 +199,16 @@ def main():
             pause_board("cycles ON/OFF déja en cours")
 
 
+def get_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-f', '--log-file',
+                        default='Log_Lifetest.csv',
+                        help="Path to the log file (CSV)")
+    parser.add_argument('-a', '--app-state-file',
+                        default='app_state.json',
+                        help="Path to the app state file (JSON)")
+    return parser.parse_args()
+
+
 if __name__ == '__main__':
-    main()
+    main(get_args())
