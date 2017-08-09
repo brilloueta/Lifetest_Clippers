@@ -1,7 +1,7 @@
 # My stuff
 
 Log_FX811E_Lifetest.txt
-Log_FX811E_Lifetest.csv
+*.csv
 app_state.json
 
 
