@@ -21,4 +21,3 @@ print('\n')
 print ('current_day = ', time.strftime('%A',time.localtime(lt.date_sec_epoch())))
 print ('current_hour = ', int(time.strftime('%H',time.localtime(lt.date_sec_epoch()))))
 print('\n')
-

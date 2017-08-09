@@ -14,7 +14,7 @@ import sys
 import time
 
 
-LOG_FILE_CSV = "Log_FX811E_Lifetest.csv"
+DEFAULT_LOG_FILE_CSV = "Log_Lifetest.csv"
 APP_STATE_PATH = "app_state.json"
 
 DEFAULT_APP_STATE = {
@@ -23,6 +23,11 @@ DEFAULT_APP_STATE = {
     'pas_incr': 1
 }
 
+
+def log_file_path():
+    if len(sys.argv) > 1:
+        return sys.argv[1]
+    return DEFAULT_LOG_FILE_CSV
 
 def dump_app_state(**kwargs):
     state = load_app_state()
@@ -79,7 +84,7 @@ def pause_board(msg, delay=15):
 
 
 def log_to_csv(cycles):
-    with open(LOG_FILE_CSV, "a") as fd:
+    with open(log_file_path(), "a") as fd:
         fd.write(str(date_sec_epoch()))
         fd.write(", ")
         fd.write(log_time())
