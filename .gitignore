@@ -2,7 +2,7 @@
 
 Log_FX811E_Lifetest.txt
 *.csv
-app_state.json
+*.json
 
 
 ## Python stuff
